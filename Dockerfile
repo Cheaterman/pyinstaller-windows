@@ -6,6 +6,7 @@ ARG WINE_VERSION=winehq-staging
 ARG PYTHON_VERSION=3.10.11
 ARG PYTHON_SHORT_VERSION=310
 ARG PYINSTALLER_VERSION=5.10.1
+ARG GIT_VERSION=2.40.0
 
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \
@@ -72,6 +73,28 @@ RUN set -x \
 
 # install pyinstaller
 RUN /usr/bin/pip install pyinstaller==$PYINSTALLER_VERSION
+
+# Install git, sadly needs xvfb, also hangs, please forgive me...
+RUN \
+    apt-get install -y --no-install-recommends xvfb && \
+    git_installer="Git-${GIT_VERSION}-64-bit.exe" && \
+    wget "https://github.com/git-for-windows/git/releases/download/v${GIT_VERSION}.windows.1/${git_installer}" && \
+    xvfb-run wine "${git_installer}" \
+        /VERYSILENT \
+        /NORESTART \
+        /NOCANCEL \
+        /SP- \
+        /CLOSEAPPLICATIONS \
+        /RESTARTAPPLICATIONS \
+        /COMPONENTS="" \
+    & \
+    ( \
+        while ! grep Git "${WINEPREFIX}/system.reg" | grep PATH >/dev/null; do \
+            sleep 1; \
+        done && \
+        wineserver -k \
+    ) && \
+    rm -f "${git_installer}"
 
 # put the src folder inside wine
 RUN mkdir /src/ && ln -s /src /wine/drive_c/src
