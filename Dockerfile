@@ -12,7 +12,7 @@ ARG GIT_VERSION=2.40.0
 RUN set -x \
     && dpkg --add-architecture i386 \
     && apt-get update -qy \
-    && apt-get install --no-install-recommends -qfy apt-transport-https software-properties-common wget gpg-agent rename \
+    && apt-get install --no-install-recommends -qfy apt-transport-https software-properties-common wget gpg-agent rename git \
     && wget -nv https://dl.winehq.org/wine-builds/winehq.key \
     && apt-key add winehq.key \
     && add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' \
