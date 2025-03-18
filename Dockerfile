@@ -93,7 +93,7 @@ RUN \
             sleep 1; \
         done && \
         wineserver -k \
-    ) && \
+    ); \
     rm -f "${git_installer}"
 
 # put the src folder inside wine
